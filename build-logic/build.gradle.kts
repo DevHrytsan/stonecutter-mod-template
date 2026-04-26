@@ -1,5 +1,6 @@
 plugins {
 	`kotlin-dsl`
+	kotlin("plugin.serialization") version embeddedKotlinVersion
 }
 
 gradlePlugin {
@@ -12,7 +13,6 @@ gradlePlugin {
 }
 
 repositories {
-	mavenLocal()
 	mavenCentral()
 	gradlePluginPortal()
 	maven("https://maven.fabricmc.net/") { name = "Fabric" }
@@ -28,4 +28,8 @@ dependencies {
 	implementation(libs.mod.publish.plugin)
 	implementation(libs.foojay.resolver)
 	implementation(libs.fletching.table)
+	implementation(libs.vanniktech.maven.publish)
+
+	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+	implementation("net.peanuuutz.tomlkt:tomlkt:0.4.0")
 }

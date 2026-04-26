@@ -3,38 +3,48 @@ plugins {
 	id("net.neoforged.moddev.legacyforge")
 }
 
+stonecutter {
+	val (version, loader) = current.project.split('-', limit = 2)
+	properties.tags(version, loader)
+
+	replacements.string(current.parsed >= "1.21.11") {
+		replace("ResourceLocation", "Identifier")
+		replace("location()", "identifier()")
+	}
+}
+
 platform {
 	loader = "forge"
 	dependencies {
 		required("minecraft") {
-			forgeVersionRange = "[${prop("deps.minecraft")}]"
+			forgeLikeVersionRange = prop("deps.minecraft")
 		}
 		required("forge") {
-			forgeVersionRange = "[1,)"
+			forgeLikeVersionRange.set("[1,)")
 		}
 	}
 }
 
 legacyForge {
-	version = "${property("deps.minecraft")}-${property("deps.forge")}"
+	version = "${prop("deps.minecraft")}-${prop("deps.forge")}"
 
 	validateAccessTransformers = true
 
 	accessTransformers.from(
-		rootProject.file("src/main/resources/aw/${stonecutter.current.version}.cfg")
+		rootProject.file("src/main/resources/aw/${sc.current.version}.cfg")
 	)
 
 	runs {
 		register("client") {
 			client()
 			gameDirectory = file("run/")
-			ideName = "Forge Client (${stonecutter.active?.version})"
+			ideName = "Forge Client (${sc.current.version})"
 			programArgument("--username=Dev")
 		}
 		register("server") {
 			server()
 			gameDirectory = file("run/")
-			ideName = "Forge Server (${stonecutter.active?.version})"
+			ideName = "Forge Server (${sc.current.version})"
 		}
 	}
 
@@ -66,15 +76,11 @@ dependencies {
 sourceSets {
 	main {
 		resources.srcDir(
-			"${rootDir}/versions/datagen/${stonecutter.current.version.split("-")[0]}/src/main/generated"
+			"${rootDir}/versions/datagen/${sc.current.version.split("-")[0]}/src/main/generated"
 		)
 	}
 }
 
 tasks.named("createMinecraftArtifacts") {
 	dependsOn(tasks.named("stonecutterGenerate"))
-}
-
-stonecutter {
-
 }

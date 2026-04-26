@@ -1,7 +1,10 @@
+@file:OptIn(dev.kikugie.stonecutter.StonecutterExperimentalAPI::class)
+
 plugins {
 	alias(libs.plugins.stonecutter)
 	alias(libs.plugins.dotenv)
 	alias(libs.plugins.fabric.loom).apply(false)
+	alias(libs.plugins.fabric.loom.remap).apply(false)
 	alias(libs.plugins.neoforged.moddev).apply(false)
 	alias(libs.plugins.jsonlang.postprocess).apply(false)
 	alias(libs.plugins.mod.publish.plugin).apply(false)
@@ -32,13 +35,25 @@ stonecutter tasks {
 	}
 }
 
+tasks.register("runActiveClient") {
+	group = "stonecutter"
+	description = "Run client of the active Stonecutter version"
+	dependsOn(stonecutter.current!!.project + ":runClient")
+}
+
+tasks.register("runActiveServer") {
+	group = "stonecutter"
+	description = "Run server of the active Stonecutter version"
+	dependsOn(stonecutter.current!!.project + ":runServer")
+}
+
 stonecutter parameters {
 	constants.match(node.metadata.project.substringAfterLast('-'), "fabric", "neoforge", "forge")
 	filters.include("**/*.fsh", "**/*.vsh")
-	swaps["mod_version"] = "\"" + property("mod.version") + "\";"
-	swaps["mod_id"] = "\"" + property("mod.id") + "\";"
-	swaps["mod_name"] = "\"" + property("mod.name") + "\";"
-	swaps["mod_group"] = "\"" + property("mod.group") + "\";"
-	swaps["minecraft"] = "\"" + node.metadata.version + "\";"
-	constants["release"] = property("mod.id") != "modtemplate"
+	swaps["mod_version"] = "\"${sc.properties.get<String>("mod.version")}\";"
+	swaps["mod_id"] = "\"${sc.properties.get<String>("mod.id")}\";"
+	swaps["mod_name"] = "\"${sc.properties.get<String>("mod.name")}\";"
+	swaps["mod_group"] = "\"${sc.properties.get<String>("mod.group")}\";"
+	swaps["minecraft"] = "\"${node.metadata.version}\";"
+	constants["release"] = sc.properties.get<String>("mod.id") != "modtemplate"
 }
