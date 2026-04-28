@@ -69,8 +69,8 @@ repositories {
 dependencies {
 	annotationProcessor("org.spongepowered:mixin:${libs.versions.mixin.get()}:processor")
 
-	implementation(libs.moulberry.mixinconstraints)
-	jarJar(libs.moulberry.mixinconstraints)
+	// implementation(libs.moulberry.mixinconstraints)
+	// jarJar(libs.moulberry.mixinconstraints)
 }
 
 sourceSets {

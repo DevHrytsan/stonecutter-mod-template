@@ -8,12 +8,12 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
-import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import org.gradle.internal.extensions.stdlib.toDefaultLowerCase
 import org.gradle.jvm.tasks.Jar
@@ -41,17 +41,14 @@ fun RepositoryHandler.strictMaven(
 
 abstract class GenerateModManifestTask : DefaultTask() {
 	@get:Input
-	abstract val manifestPath: Property<String>
-
-	@get:Input
 	abstract val content: Property<String>
 
-	@get:OutputDirectory
-	abstract val outputDir: DirectoryProperty
+	@get:OutputFile
+	abstract val outputFile: RegularFileProperty
 
 	@TaskAction
 	fun generate() {
-		val file = outputDir.get().asFile.resolve(manifestPath.get())
+		val file = outputFile.get().asFile
 		file.parentFile.mkdirs()
 		file.writeText(content.get())
 	}
@@ -121,12 +118,10 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 	}
 
 	private fun Project.registerGenerateManifestTask(ctx: Context) {
-
 		val manifestOutputDir = layout.buildDirectory.dir("generated/modManifest")
 		val generateTask = tasks.register<GenerateModManifestTask>("generateModManifest") {
-			manifestPath.set(ctx.loader.modManifestPath)
 			content.set(ctx.loader.generateManifest(ctx))
-			outputDir.set(manifestOutputDir)
+			outputFile.set(layout.buildDirectory.file("generated/modManifest/${ctx.loader.modManifestPath}"))
 		}
 
 		the<JavaPluginExtension>().sourceSets.named("main") { resources.srcDir(manifestOutputDir) }
@@ -138,7 +133,6 @@ abstract class ModPlatformPlugin @Inject constructor() : Plugin<Project> {
 		}
 	}
 
-	@Suppress("UnstableApiUsage")
 	private fun Project.configureProcessResources(ctx: Context) {
 		tasks.named<ProcessResources>("processResources") {
 			dependsOn(tasks.named("stonecutterGenerate"), "kspKotlin")

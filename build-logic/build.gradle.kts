@@ -29,7 +29,6 @@ dependencies {
 	implementation(libs.foojay.resolver)
 	implementation(libs.fletching.table)
 	implementation(libs.vanniktech.maven.publish)
-
-	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
-	implementation("net.peanuuutz.tomlkt:tomlkt:0.4.0")
+	implementation(libs.serialization.json)
+	implementation(libs.serialization.toml)
 }
