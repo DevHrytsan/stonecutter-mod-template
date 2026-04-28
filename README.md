@@ -207,11 +207,10 @@ To set up the CI for publishing:
 1. Go to your repository on GitHub and open **Settings > Secrets and variables > Actions**.
 2. Under **Secrets**, add any credentials you need (tokens, signing key, Maven credentials).
 3. Under **Variables**, add the toggles and IDs for your platforms. At minimum, you likely want:
-
-- `PUB_MODS_ENABLE = true`
-- `PUB_GITHUB_RELEASES = true`
-- `PUB_MODRINTH_PROJECT_ID = <your id>`
-- `PUB_CURSEFORGE_PROJECT_ID = <your id>`
+   <br/>`PUB_MODS_ENABLE = true`
+   <br/>`PUB_GITHUB_RELEASES = true`
+   <br/>`PUB_MODRINTH_PROJECT_ID = <your id>`
+   <br/>`PUB_CURSEFORGE_PROJECT_ID = <your id>`
 
 4. To trigger a release, make sure `mod.version` and `mod.channel_tag` in `stonecutter.properties.toml` reflect the
    version you want to release, then push a tag that matches the combined value:
@@ -221,6 +220,12 @@ To set up the CI for publishing:
    ```
    If the tag does not match the version in the properties file the workflow will delete the tag and fail early without
    building.
+
+## Dependency Updates with Renovate
+
+The file `renovate.json.example` contains a minimal [Renovate](https://docs.renovatebot.com/) configuration.
+If you want automated dependency update PRs, rename it to `renovate.json` and enable the Renovate GitHub App on your
+repository. The default config (`config:recommended`) is enough to get started.
 
 ## Resources and Links
 
